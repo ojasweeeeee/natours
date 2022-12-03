@@ -11843,7 +11843,7 @@ exports.showAlert = showAlert;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.logout = exports.login = void 0;
+exports.signup = exports.logout = exports.login = void 0;
 var _axios = _interopRequireDefault(require("axios"));
 var _alert = require("./alert");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -11893,9 +11893,11 @@ var login = /*#__PURE__*/function () {
     return _ref.apply(this, arguments);
   };
 }();
+
+//CHANGES HERE
 exports.login = login;
-var logout = /*#__PURE__*/function () {
-  var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+var signup = /*#__PURE__*/function () {
+  var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(name, email, password, passwordConfirm) {
     var res;
     return _regeneratorRuntime().wrap(function _callee2$(_context2) {
       while (1) {
@@ -11904,28 +11906,73 @@ var logout = /*#__PURE__*/function () {
             _context2.prev = 0;
             _context2.next = 3;
             return (0, _axios.default)({
-              method: 'GET',
-              url: 'http://127.0.0.1:3000/api/v1/users/logout'
+              method: 'POST',
+              url: 'http://127.0.0.1:3000/api/v1/users/signup',
+              data: {
+                name: name,
+                email: email,
+                password: password,
+                passwordConfirm: passwordConfirm
+              }
             });
           case 3:
             res = _context2.sent;
-            if (res.data.status = 'success') location.reload(true);
-            _context2.next = 11;
+            if (res.data.status === 'success') {
+              (0, _alert.showAlert)('success', 'Account created successfully!');
+              window.setTimeout(function () {
+                location.assign('/');
+              }, 1500);
+            }
+            _context2.next = 10;
             break;
           case 7:
             _context2.prev = 7;
             _context2.t0 = _context2["catch"](0);
-            console.log(_context2.t0.response);
-            (0, _alert.showAlert)('error', 'Error logging out! Try again.');
-          case 11:
+            (0, _alert.showAlert)('error', _context2.t0.response.data.message);
+          case 10:
           case "end":
             return _context2.stop();
         }
       }
     }, _callee2, null, [[0, 7]]);
   }));
-  return function logout() {
+  return function signup(_x3, _x4, _x5, _x6) {
     return _ref2.apply(this, arguments);
+  };
+}();
+exports.signup = signup;
+var logout = /*#__PURE__*/function () {
+  var _ref3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+    var res;
+    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+      while (1) {
+        switch (_context3.prev = _context3.next) {
+          case 0:
+            _context3.prev = 0;
+            _context3.next = 3;
+            return (0, _axios.default)({
+              method: 'GET',
+              url: 'http://127.0.0.1:3000/api/v1/users/logout'
+            });
+          case 3:
+            res = _context3.sent;
+            if (res.data.status = 'success') location.reload(true);
+            _context3.next = 11;
+            break;
+          case 7:
+            _context3.prev = 7;
+            _context3.t0 = _context3["catch"](0);
+            console.log(_context3.t0.response);
+            (0, _alert.showAlert)('error', 'Error logging out! Try again.');
+          case 11:
+          case "end":
+            return _context3.stop();
+        }
+      }
+    }, _callee3, null, [[0, 7]]);
+  }));
+  return function logout() {
+    return _ref3.apply(this, arguments);
   };
 }();
 exports.logout = logout;
@@ -12186,30 +12233,51 @@ if (loginForm) {
 }
 if (logOutBtn) logOutBtn.addEventListener('click', _login.logout);
 if (userDataForm) {
-  userDataForm.addEventListener('submit', function (e) {
-    e.preventDefault();
-    var name = document.getElementById('name').value;
-    var email = document.getElementById('email').value;
-    (0, _updateSettings.updateSettings)({
-      name: name,
-      email: email
-    }, 'data');
-  });
-}
-if (userPasswordForm) {
-  userPasswordForm.addEventListener('submit', /*#__PURE__*/function () {
+  userDataForm.addEventListener('submit', /*#__PURE__*/function () {
     var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(e) {
-      var passwordCurrent, password, passwordConfirm;
+      var form;
       return _regeneratorRuntime().wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
+            case 0:
+              e.preventDefault();
+              document.querySelector('.btn--save-settings').textContent = 'Updating...';
+              form = new FormData();
+              form.append('name', document.getElementById('name').value);
+              form.append('email', document.getElementById('email').value);
+              form.append('photo', document.getElementById('photo').files[0]);
+              console.log(form);
+              _context.next = 9;
+              return (0, _updateSettings.updateSettings)(form, 'data');
+            case 9:
+              document.querySelector('.btn--save-settings').textContent = 'Save settings';
+              location.reload();
+            case 11:
+            case "end":
+              return _context.stop();
+          }
+        }
+      }, _callee);
+    }));
+    return function (_x) {
+      return _ref.apply(this, arguments);
+    };
+  }());
+}
+if (userPasswordForm) {
+  userPasswordForm.addEventListener('submit', /*#__PURE__*/function () {
+    var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(e) {
+      var passwordCurrent, password, passwordConfirm;
+      return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+        while (1) {
+          switch (_context2.prev = _context2.next) {
             case 0:
               e.preventDefault();
               document.querySelector('.btn--save-password').textContent = 'Updating...';
               passwordCurrent = document.getElementById('password-current').value;
               password = document.getElementById('password').value;
               passwordConfirm = document.getElementById('password-confirm').value;
-              _context.next = 7;
+              _context2.next = 7;
               return (0, _updateSettings.updateSettings)({
                 passwordCurrent: passwordCurrent,
                 password: password,
@@ -12222,13 +12290,13 @@ if (userPasswordForm) {
               document.getElementById('password-confirm').value = '';
             case 11:
             case "end":
-              return _context.stop();
+              return _context2.stop();
           }
         }
-      }, _callee);
+      }, _callee2);
     }));
-    return function (_x) {
-      return _ref.apply(this, arguments);
+    return function (_x2) {
+      return _ref2.apply(this, arguments);
     };
   }());
 }
@@ -12257,7 +12325,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53852" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51172" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];
